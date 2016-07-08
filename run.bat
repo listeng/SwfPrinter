@@ -1,0 +1,1 @@
+D:\works\airsdk\bin\adl.exe application.xml bin

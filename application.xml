@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application xmlns="http://ns.adobe.com/air/application/18.0">
+  <id>com.ester.printer</id>
+  <versionNumber>1.0</versionNumber>
+  <filename>Swf Printer</filename>
+  <name>SwfPrinter</name>
+  <initialWindow>
+    <title>print swf</title>
+    <content>print.swf</content>
+    <systemChrome>standard</systemChrome>
+    <transparent>false</transparent>
+    <visible>true</visible>
+    <minimizable>false</minimizable>
+    <maximizable>false</maximizable>
+    <resizable>false</resizable>
+    <width>300</width>
+    <height>300</height>
+  </initialWindow>
+  <!-- 
+	More options:
+	http://livedocs.adobe.com/flex/3/html/File_formats_1.html#1043413
+	-->
+  <android>
+    <manifestAdditions><![CDATA[<manifest android:installLocation="auto" xmlns:android="http://schemas.android.com/apk/res/android" />]]></manifestAdditions>
+  </android>
+  <copyright>tls @2016</copyright>
+  <supportedProfiles>desktop</supportedProfiles>
+</application>

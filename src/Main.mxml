@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+                       xmlns:s="library://ns.adobe.com/flex/spark"
+                       xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+		import flash.display.*;
+		import flash.printing.PrintJob;
+		import flash.events.*;
+		import flash.text.*;
+		import flash.filesystem.*;
+		import flash.net.*;
+		import mx.controls.Alert;
+		
+		private var swfs:Array = new Array();
+		private var label:TextField;
+		private var selected:int;
+
+        public function Printer(f:String):void
+        {
+            var loader:Loader = new Loader();
+            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaded);
+            loader.load(new URLRequest(f));
+        }
+		
+		function orderSwfs(a, b):int 
+		{ 
+			if (a.num < b.num) 
+			{ 
+				return -1; 
+			} 
+			else if (a.num > b.num) 
+			{ 
+				return 1; 
+			} 
+			else 
+			{ 
+				return 0; 
+			} 
+		} 
+		
+		public function onLoaded(e:Event):void
+        {
+			var loader:Loader = Loader(e.target.loader);
+			
+			var sprite:Sprite = new Sprite();
+			sprite.addChild(loader);
+			
+			var name:String = loader.contentLoaderInfo.url;
+			var num = parseInt(name.substring(name.lastIndexOf('\\') + 1, name.lastIndexOf('.')));
+			
+			swfs.push(new SwfList(num, sprite));
+			
+			doPrint(null);
+        }
+		
+		private function doPrint(e:Event):void {
+			
+			if (selected == swfs.length) {
+				
+				swfs.sort(orderSwfs);
+			
+				var pj:PrintJob = new PrintJob();
+				if(pj.start()) {
+					
+					for (var i:int = 0; i < swfs.length; i++) 
+					{
+						var sx:Number =  - ((pj.pageWidth - swfs[i].sprite.width)/2);
+						var sy:Number =  - ((pj.pageHeight - swfs[i].sprite.height)/2);
+
+						var bounds:Rectangle = new Rectangle(sx, sy, pj.pageWidth, pj.pageHeight);
+
+						pj.addPage(swfs[i].sprite, bounds);
+					}
+					
+					pj.send();
+					
+					Alert.show("finish");
+				}
+            }
+        }
+		
+		private function showOpenDlg(e:Event):void {
+			var fileToOpen:File = File.documentsDirectory;
+			
+			swfs = new Array();
+			selected = 0;
+			 
+			var txtFilter:FileFilter = new FileFilter("Flash Swf", "*.swf"); 
+			fileToOpen.browseForOpenMultiple("Open", [txtFilter]); 
+			fileToOpen.addEventListener(FileListEvent.SELECT_MULTIPLE, fileSelected); 
+        }
+		
+		private function fileSelected(event:FileListEvent):void 
+		{
+			selected = event.files.length;
+			
+			for (var i:uint = 0; i < event.files.length; i++) 
+			{
+				Printer("file:///" + event.files[i].nativePath);
+			}
+		} 
+		
+		
+		]]>
+	</fx:Script>
+	
+		
+	<mx:Button id="openDlg" x="10" y="10" label="Select some SWF files for print..." click="showOpenDlg(event)"/>
+	
+</s:WindowedApplication>
